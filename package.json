@@ -1,0 +1,17 @@
+{
+  "name": "tiktok-live-analytics",
+  "version": "1.0.0",
+  "description": "Analyse TikTok lives.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Anas Qiblawi",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "socket.io": "^4.5.1",
+    "tiktok-live-connector": "^0.9.25"
+  }
+}

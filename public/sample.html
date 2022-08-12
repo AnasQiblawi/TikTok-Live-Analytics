@@ -1,0 +1,1365 @@
+<html>
+
+<head>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>TikTok Live Analytics</title>
+
+    <!-- jQuery Core 3.6.0 -->
+    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> -->
+    <script src="assets/cdn/jquery-3.6.0.min.js"></script>
+
+    <!-- Socket.io -->
+    <!-- <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script> -->
+    <script src="assets/cdn/socket.io-4.5.0.min.js"></script>
+
+    <!-- Videojs -->
+    <!-- <link href="https://vjs.zencdn.net/7.19.2/video-js.css" rel="stylesheet" />
+    <script defer src="https://vjs.zencdn.net/7.19.2/video.min.js"></script> -->
+
+    <!-- bilibili - flv.js -->
+    <!-- https://github.com/Bilibili/flv.js -->
+    <!-- <script src="http://bilibili.github.io/flv.js/dist/flv.js"></script> -->
+    <!-- <script src="https://github.com/bilibili/flv.js/releases/download/v1.6.2/flv.js"></script> -->
+    <script src="assets/cdn/flv-1.6.2.js"></script>
+    <!-- Font Awesome -->
+    <!-- <script src="https://kit.fontawesome.com/f254c672ac.js" crossorigin="anonymous"></script> -->
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer"> -->
+    <link href="assets//cdn/all.min.css" rel="stylesheet" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- Google Fonts -->
+    <!-- <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" /> -->
+    <link href="assets/cdn/google_fonts.css" rel="stylesheet">
+    <!-- MDB CSS -->
+    <!-- <link defer href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.9.0/mdb.dark.min.css" rel="stylesheet" /> -->
+    <link href="assets/cdn/mdb.dark.min.css" rel="stylesheet">
+    <!-- MDB JS -->
+    <!-- <script defer type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.9.0/mdb.min.js"></script> -->
+    <script defer type="text/javascript" src="assets/cdn/mdb.min.js"></script>
+    <!-- 
+		In case I decided to use normal BootStrap.
+			https://getbootstrap.com/docs/versions/
+			https://getbootstrap.com/docs/5.1/getting-started/introduction/
+	-->
+
+    <!-- Animate CSS -->
+    <!-- https://animate.style -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/> -->
+    <link href="assets/cdn/animate.min.css" rel="stylesheet">
+    <!-- Scripts -->
+    <script src="assets/videoPlayer.js"></script>
+    <script src="assets/db.js"></script>
+    <script src="assets/connection.js"></script>
+    <script src="assets/app.js"></script>
+
+    <!-- StyleSheets -->
+    <link rel="stylesheet" href="assets/style.css">
+    <!-- Sample CSS -->
+    <style>
+        INPUT:-webkit-autofill,
+        SELECT:-webkit-autofill,
+        TEXTAREA:-webkit-autofill {
+            animation-name: onautofillstart
+        }
+
+        INPUT:not(:-webkit-autofill),
+        SELECT:not(:-webkit-autofill),
+        TEXTAREA:not(:-webkit-autofill) {
+            animation-name: onautofillcancel
+        }
+
+        @keyframes onautofillstart {}
+
+        @keyframes onautofillcancel {}
+
+        ._grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            grid-template-rows: repeat(auto-fill, minmax(220px, 1fr));
+            /* grid-template-rows: repeat(1, 220px); */
+            grid-column-gap: 10px;
+            grid-row-gap: 10px;
+            box-shadow: inset 0px 0px 20px 10px rgba(0, 0, 0, 0.1);
+            overflow: auto;
+            height: 0;
+            min-height: 100%;
+        }
+
+        .glow {
+            object-fit: contain;
+            object-fit: cover;
+            position: absolute;
+            filter: blur(10px) !important;
+            scale: 0.9;
+        }
+    </style>
+    <!-- Sample Scripts -->
+    <script defer>
+        window.onload = () => $('#stats').fadeIn()
+    </script>
+</head>
+
+<body>
+    <!-- onbeforecopy="return false"
+    ondragstart="return false" 
+    onselectstart="return false" 
+    oncontextmenu="return false" 
+    mouseup="return false" 
+    mousedown="return false" 
+    dragstart="return false" 
+    onselect="document.selection.empty()" 
+    oncopy="document.selection.empty()"> -->
+
+    <div class="container h-100">
+
+        <div class="row row-cols-1 pb-1">
+
+            <!-- inputes -->
+            <div class="col row px-0 py-2 mx-0">
+                <p class="col-12">Enter the <b>@username</b> of a user who is currently live:
+                    <a href="https://www.tiktok.com/live"><b>TikTok LIVE</b></a>
+                </p>
+                <div class="col-lg-5 col-12 row row-cols-3 gx-2 px-3" style="column-gap: 10px;">
+                    <div class="form-outline col-6">
+                        <input type="text" id="uniqueIdInput" class="form-control active">
+                        <label class="form-label" style="margin-left: 0px;">Username</label>
+                        <div class="form-notch">
+                            <div class="form-notch-leading" style="width: 9px;"></div>
+                            <div class="form-notch-middle" style="width: 66.4px;"></div>
+                            <div class="form-notch-trailing"></div>
+                        </div>
+                    </div>
+                    <button type="button" id="connectButton"
+                        class="col-3 btn btn-outline-light btn-rounded ripple-surface"
+                        style="min-width: 111px;">connect</button>
+                    <button type="button" id="reconnectButton" onclick="connect(true)"
+                        class="col-1 btn btn-outline-light btn-floating ripple-surface" style="min-width: 37px;">
+                        <i class="fa-solid fa-lg fa-rotate"></i>
+                    </button>
+                </div>
+                <span id="stateText" class="col-lg-7 col-12 d-flex align-items-center" style="color: red;">Error: LIVE has ended</span>
+            </div>
+
+            <!-- Stats -->
+            <div id="stats" class="col-12 py-2 px-0 mx-0 mt-2 row rounded-5" style="justify-content: center;">
+                <!-- Owner -->
+                <div class="col-md-6 col-12 row row-cols-2 d-flex align-items-center p-0 m-0">
+                    <div id="profilePicture" class="col-4 p-2 d-flex align-items-center justify-content-center">
+                        <img id="avatar" class="rounded-circle" height="100px" width="100px"
+                            style="object-fit: contain;object-fit: cover; position: absolute;z-index: -1;filter: blur(10px);scale: 0.9;"
+                            src="sample_assets/sample_profilePicture.jpg" />
+                        <img id="avatar" class="rounded-circle border border-5" height="100px" width="100px"
+                            style="object-fit: contain;object-fit: cover" src="sample_assets/sample_profilePicture.jpg">
+                    </div>
+                    <div class="col-8">
+                        <h6 id="uniqueId">Username: <a href="https://www.tiktok.com/@y_3050" target="_blank">y_3050</a>
+                        </h6>
+                        <h6>Following: <i id="following">358</i></h6>
+                        <h6>Followers: <i id="followers">4.3M</i></h6>
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-6 row p-2">
+                    <!--  -->
+                    <div id="views" class="col-lg-6 col-md-12 col-6 text-center m-auto" data-mdb-toggle="tooltip"  data-mdb-placement="top"
+                        title="27,078" data-mdb-original-title="27,078">
+                        <h4>Views</h4>
+                        <h5>27K</h5>
+                    </div>
+                    <!--  -->
+                    <div id="likes" class="col-lg-6 col-md-12 col-6 text-center m-auto" data-mdb-toggle="tooltip"  data-mdb-placement="top"
+                        title="7,338,556" data-mdb-original-title="7,338,556">
+                        <h4>Likes</h4>
+                        <h5>7.3M</h5>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 row p-2">
+                    <!--  -->
+                    <div id="coins" class="col-lg-6 col-md-12 col-6 text-center m-auto" data-mdb-toggle="tooltip"  data-mdb-placement="top"
+                        title="3,743,839" data-mdb-original-title="3,743,839">
+                        <h4>Coins</h4>
+                        <h5>3.7M</h5>
+                    </div>
+                    <!--  -->
+                    <div id="money" class="col-lg-6 col-md-12 col-6 text-center m-auto" data-mdb-toggle="tooltip"  data-mdb-placement="top"
+                        title="SAR&nbsp;236,353.47" data-mdb-original-title="SAR&nbsp;236,353.47">
+                        <h4>Money</h4>
+                        <h5>SAR&nbsp;236K</h5>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 row py-3 px-0 mx-0">
+
+                <!-- Video Player -->
+                <div id="videoContainer" class="col-lg-3 col-md-5 col-12 m-0 p-0">
+                    <video id="VideoPlayer" controls="" autoplay="" preload="auto" width="100%" height="100%"
+                        class="rounded-3" src="blob:http://localhost/ae5e471e-69ed-4780-8d94-405025d1f0c4"
+                        autocompleted=""></video>
+                </div>
+
+                <!-- Gifts -->
+                <div class="col-lg-9 col-md-7 col-12 p-2 _grid-container rounded-3">
+                    <!-- <div id="giftsContainer" class="col-lg-9 col-md-7 col-12 p-2 grid-container rounded-3"> -->
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5650">
+                        <!-- <img src="sample_assets/gifts/8d4381b7d2272ffc14227c3705832e24_tplv-obj.png" loading="auto" alt="" class="card-img-top glow animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/8d4381b7d2272ffc14227c3705832e24_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Mic</h5>
+                            <span>x<b class="animate__animated animate__flipInX">216</b></span>
+                            <p>5 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="37">
+                        <!-- <img src="sample_assets/gifts/77259f70262b6632b9926a4a7ed12391_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/77259f70262b6632b9926a4a7ed12391_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Panda</h5>
+                            <span>x<b class="animate__animated animate__flipInX">195</b></span>
+                            <p>5 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5655">
+                        <!-- <img src="sample_assets/gifts/eba3a9bb85c33e017f3648eaf88d7189_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/eba3a9bb85c33e017f3648eaf88d7189_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Rose</h5>
+                            <span>x<b class="animate__animated animate__flipInX">33581</b></span>
+                            <p>1 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6592">
+                        <!-- <img src="sample_assets/gifts/2734231d880b5cd20149f4cc8c760279_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/2734231d880b5cd20149f4cc8c760279_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">TGIF</h5>
+                            <span>x<b class="animate__animated animate__flipInX">3955</b></span>
+                            <p>1 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5269">
+                        <!-- <img src="sample_assets/gifts/802a21ae29f9fae5abe3693de9f874bd_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/802a21ae29f9fae5abe3693de9f874bd_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">TikTok</h5>
+                            <span>x<b class="animate__animated animate__flipInX">18252</b></span>
+                            <p>1 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5827">
+                        <!-- <img src="sample_assets/gifts/968820bc85e274713c795a6aef3f7c67_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/968820bc85e274713c795a6aef3f7c67_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Ice Cream Cone</h5>
+                            <span>x<b class="animate__animated animate__flipInX">1275</b></span>
+                            <p>1 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6554">
+                        <!-- <img src="sample_assets/gifts/1c7aaabca77db60f0f415739d2d61e07_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/1c7aaabca77db60f0f415739d2d61e07_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Dance Together</h5>
+                            <span>x<b class="animate__animated animate__flipInX">3</b></span>
+                            <p>699 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6042">
+                        <!-- <img src="sample_assets/gifts/728cc7436005cace2791aa7500e4bf95_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/728cc7436005cace2791aa7500e4bf95_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Mini Speaker</h5>
+                            <span>x<b class="animate__animated animate__flipInX">347</b></span>
+                            <p>1 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5282">
+                        <!-- <img src="sample_assets/gifts/98bea1b189fba75bf0ca766b4dc1976e_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/98bea1b189fba75bf0ca766b4dc1976e_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Heart</h5>
+                            <span>x<b class="animate__animated animate__flipInX">152</b></span>
+                            <p>10 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6646">
+                        <!-- <img src="sample_assets/gifts/a7748baba012c9e2d98a30dce7cc5a27_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/a7748baba012c9e2d98a30dce7cc5a27_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Leon the Kitten</h5>
+                            <span>x<b class="animate__animated animate__flipInX">11</b></span>
+                            <p>4,888 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6642">
+                        <!-- <img src="sample_assets/gifts/ebb5bcf8d8fe3f8975eeb76b37ddbd77_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/ebb5bcf8d8fe3f8975eeb76b37ddbd77_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Suitcase</h5>
+                            <span>x<b class="animate__animated animate__flipInX">18</b></span>
+                            <p>199 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6267">
+                        <!-- <img src="sample_assets/gifts/148eef0884fdb12058d1c6897d1e02b9_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/148eef0884fdb12058d1c6897d1e02b9_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Corgi</h5>
+                            <span>x<b class="animate__animated animate__flipInX">20</b></span>
+                            <p>299 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6641">
+                        <!-- <img src="sample_assets/gifts/c4f64e143d42c83446e32487aff46b28_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/c4f64e143d42c83446e32487aff46b28_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Ice Cube</h5>
+                            <span>x<b class="animate__animated animate__flipInX">7846</b></span>
+                            <p>1 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6052">
+                        <!-- <img src="sample_assets/gifts/8ebe28a907bb6237fa3b11a97deffe96_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/8ebe28a907bb6237fa3b11a97deffe96_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Gamepad</h5>
+                            <span>x<b class="animate__animated animate__flipInX">19</b></span>
+                            <p>10 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6129">
+                        <!-- <img src="sample_assets/gifts/138cec09b979a9242a97b44c6b7be171_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/138cec09b979a9242a97b44c6b7be171_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Kafu</h5>
+                            <span>x<b class="animate__animated animate__flipInX">32</b></span>
+                            <p>30 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6734">
+                        <!-- <img src="sample_assets/gifts/76014ebfa958b969625aa353ec88e2fc_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/76014ebfa958b969625aa353ec88e2fc_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Wishing Bottle</h5>
+                            <span>x<b class="animate__animated animate__flipInX">668</b></span>
+                            <p>1 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6093">
+                        <!-- <img src="sample_assets/gifts/c043cd9e418f13017793ddf6e0c6ee99_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/c043cd9e418f13017793ddf6e0c6ee99_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Soccer</h5>
+                            <span>x<b class="animate__animated animate__flipInX">340</b></span>
+                            <p>1 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5924">
+                        <!-- <img src="sample_assets/gifts/47e9081623cdae9faa55f4d0d67908bf_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/47e9081623cdae9faa55f4d0d67908bf_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Hand Heart</h5>
+                            <span>x<b class="animate__animated animate__flipInX">67</b></span>
+                            <p>100 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5585">
+                        <!-- <img src="sample_assets/gifts/cb4e11b3834e149f08e1cdcc93870b26_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/cb4e11b3834e149f08e1cdcc93870b26_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Confetti</h5>
+                            <span>x<b class="animate__animated animate__flipInX">27</b></span>
+                            <p>100 coin</p>
+                        </div>
+                    </div>
+
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6104">
+                        <!-- <img src="sample_assets/gifts/6c2ab2da19249ea570a2ece5e3377f04_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/6c2ab2da19249ea570a2ece5e3377f04_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Cap</h5>
+                            <span>x<b class="animate__animated animate__flipInX">29</b></span>
+                            <p>99 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6340">
+                        <!-- <img src="sample_assets/gifts/01169f1fd3990b867c7f24d21c0e2a7f_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/01169f1fd3990b867c7f24d21c0e2a7f_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Dates</h5>
+                            <span>x<b class="animate__animated animate__flipInX">504</b></span>
+                            <p>1 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5760">
+                        <!-- <img src="sample_assets/gifts/a99fc8541c7b91305de1cdcf47714d03_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/a99fc8541c7b91305de1cdcf47714d03_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Weights</h5>
+                            <span>x<b class="animate__animated animate__flipInX">1027</b></span>
+                            <p>1 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5776">
+                        <!-- <img src="sample_assets/gifts/2cadff123e24e328c040380c44c7ea6b_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/2cadff123e24e328c040380c44c7ea6b_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Birthday Cake</h5>
+                            <span>x<b class="animate__animated animate__flipInX">2</b></span>
+                            <p>300 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6427">
+                        <!-- <img src="sample_assets/gifts/2f1e4f3f5c728ffbfa35705b480fdc92_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/2f1e4f3f5c728ffbfa35705b480fdc92_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Hat and Mustache</h5>
+                            <span>x<b class="animate__animated animate__flipInX">55</b></span>
+                            <p>99 coin</p>
+                        </div>
+                    </div>
+
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5879">
+                        <!-- <img src="sample_assets/gifts/4e7ad6bdf0a1d860c538f38026d4e812_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/4e7ad6bdf0a1d860c538f38026d4e812_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Doughnut</h5>
+                            <span>x<b class="animate__animated animate__flipInX">29</b></span>
+                            <p>30 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5658">
+                        <!-- <img src="sample_assets/gifts/20b8f61246c7b6032777bb81bf4ee055_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/20b8f61246c7b6032777bb81bf4ee055_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Perfume</h5>
+                            <span>x<b class="animate__animated animate__flipInX">79</b></span>
+                            <p>20 coin</p>
+                        </div>
+                    </div>
+
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6059">
+                        <!-- <img src="sample_assets/gifts/63135affee2016240473cab8376dfe74_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/63135affee2016240473cab8376dfe74_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Hand Wave</h5>
+                            <span>x<b class="animate__animated animate__flipInX">235</b></span>
+                            <p>9 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6117">
+                        <!-- <img src="sample_assets/gifts/4f5481830412aae4849a8b004ab5c2be_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/4f5481830412aae4849a8b004ab5c2be_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">The Magic Lamp</h5>
+                            <span>x<b class="animate__animated animate__flipInX">9</b></span>
+                            <p>1,000 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5487">
+                        <!-- <img src="sample_assets/gifts/a4c4dc437fd3a6632aba149769491f49.png_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/a4c4dc437fd3a6632aba149769491f49.png_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Finger Heart</h5>
+                            <span>x<b class="animate__animated animate__flipInX">657</b></span>
+                            <p>5 coin</p>
+                        </div>
+                    </div>
+
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5831">
+                        <!-- <img src="sample_assets/gifts/b6266323ef3ea0d313cbab6911ff8c46_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/b6266323ef3ea0d313cbab6911ff8c46_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Flower Show</h5>
+                            <span>x<b class="animate__animated animate__flipInX">5</b></span>
+                            <p>500 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6169">
+                        <!-- <img src="sample_assets/gifts/09d9b188294ecf9b210c06f4e984a3bd_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/09d9b188294ecf9b210c06f4e984a3bd_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Tennis</h5>
+                            <span>x<b class="animate__animated animate__flipInX">514</b></span>
+                            <p>1 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6671">
+                        <!-- <img src="sample_assets/gifts/134e51c00f46e01976399883ca4e4798_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/134e51c00f46e01976399883ca4e4798_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Love You</h5>
+                            <span>x<b class="animate__animated animate__flipInX">8</b></span>
+                            <p>199 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5919">
+                        <!-- <img src="sample_assets/gifts/150f5e63a9f12705d1843bf1044e8e4a_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/150f5e63a9f12705d1843bf1044e8e4a_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Love you</h5>
+                            <span>x<b class="animate__animated animate__flipInX">43</b></span>
+                            <p>20 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6437">
+                        <!-- <img src="sample_assets/gifts/bdbdd8aeb2b69c173a3ef666e63310f3_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/bdbdd8aeb2b69c173a3ef666e63310f3_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Garland Headpiece</h5>
+                            <span>x<b class="animate__animated animate__flipInX">6</b></span>
+                            <p>199 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5657">
+                        <!-- <img src="sample_assets/gifts/7d055532898d2060101306de62b89882_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/7d055532898d2060101306de62b89882_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Lollipop</h5>
+                            <span>x<b class="animate__animated animate__flipInX">10</b></span>
+                            <p>10 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6097">
+                        <!-- <img src="sample_assets/gifts/cf3db11b94a975417043b53401d0afe1_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/cf3db11b94a975417043b53401d0afe1_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Little Crown</h5>
+                            <span>x<b class="animate__animated animate__flipInX">11</b></span>
+                            <p>99 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6064">
+                        <!-- <img src="sample_assets/gifts/3f02fa9594bd1495ff4e8aa5ae265eef_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/3f02fa9594bd1495ff4e8aa5ae265eef_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">GG</h5>
+                            <span>x<b class="animate__animated animate__flipInX">1275</b></span>
+                            <p>1 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6532">
+                        <!-- <img src="sample_assets/gifts/1cc030f69570f04ee7955781b997dc44_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/1cc030f69570f04ee7955781b997dc44_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Dancing Cactus</h5>
+                            <span>x<b class="animate__animated animate__flipInX">3</b></span>
+                            <p>299 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6233">
+                        <!-- <img src="sample_assets/gifts/753098e5a8f45afa965b73616c04cf89_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/753098e5a8f45afa965b73616c04cf89_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Travel with You</h5>
+                            <span>x<b class="animate__animated animate__flipInX">16</b></span>
+                            <p>999 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6436">
+                        <!-- <img src="sample_assets/gifts/996895614694e9d8f14976ae2a570936_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/996895614694e9d8f14976ae2a570936_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Love Focus</h5>
+                            <span>x<b class="animate__animated animate__flipInX">1</b></span>
+                            <p>199 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5557">
+                        <!-- <img src="sample_assets/gifts/c1011eb4f54296384d28fec643604d9a.png_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/c1011eb4f54296384d28fec643604d9a.png_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Give me five</h5>
+                            <span>x<b class="animate__animated animate__flipInX">56</b></span>
+                            <p>10 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5586">
+                        <!-- <img src="sample_assets/gifts/934b5a10dee8376df5870a61d2ea5cb6.png_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/934b5a10dee8376df5870a61d2ea5cb6.png_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Hearts</h5>
+                            <span>x<b class="animate__animated animate__flipInX">17</b></span>
+                            <p>199 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5509">
+                        <!-- <img src="sample_assets/gifts/08af67ab13a8053269bf539fd27f3873.png_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/08af67ab13a8053269bf539fd27f3873.png_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Sunglasses</h5>
+                            <span>x<b class="animate__animated animate__flipInX">28</b></span>
+                            <p>199 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5300">
+                        <!-- <img src="sample_assets/gifts/5c017676024a19dc2c78c14a0e669ad2_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/5c017676024a19dc2c78c14a0e669ad2_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Sceptre</h5>
+                            <span>x<b class="animate__animated animate__flipInX">30</b></span>
+                            <p>150 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6078">
+                        <!-- <img src="sample_assets/gifts/429bbdb7edb7013bbe8bc8bdfacd57e6_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/429bbdb7edb7013bbe8bc8bdfacd57e6_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Desert Camp</h5>
+                            <span>x<b class="animate__animated animate__flipInX">2</b></span>
+                            <p>899 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6743">
+                        <!-- <img src="sample_assets/gifts/67cd901161cf964276a5b28251807d82_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/67cd901161cf964276a5b28251807d82_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Leo Star Sign</h5>
+                            <span>x<b class="animate__animated animate__flipInX">1</b></span>
+                            <p>9,999 coin</p>
+                        </div>
+                    </div>
+
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5767">
+                        <!-- <img src="sample_assets/gifts/dee3de6d167fc70354c624c0bd647e43_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/dee3de6d167fc70354c624c0bd647e43_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Private Jet</h5>
+                            <span>x<b class="animate__animated animate__flipInX">5</b></span>
+                            <p>4,888 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5598">
+                        <!-- <img src="sample_assets/gifts/9651f80586431e85dbf4d96c067b22f9.png_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/9651f80586431e85dbf4d96c067b22f9.png_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Diamond Heart necklace</h5>
+                            <span>x<b class="animate__animated animate__flipInX">15</b></span>
+                            <p>200 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5284">
+                        <!-- <img src="sample_assets/gifts/70529cd75b4d64587658c462c45dc238_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/70529cd75b4d64587658c462c45dc238_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Kiss</h5>
+                            <span>x<b class="animate__animated animate__flipInX">9</b></span>
+                            <p>150 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5660">
+                        <!-- <img src="sample_assets/gifts/6cd022271dc4669d182cad856384870f_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/6cd022271dc4669d182cad856384870f_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Hand Hearts</h5>
+                            <span>x<b class="animate__animated animate__flipInX">66</b></span>
+                            <p>100 coin</p>
+                        </div>
+                    </div>
+
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5513">
+                        <!-- <img src="sample_assets/gifts/b4e1bcfd1a5bdd45234d5b51d7fda01d.png_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/b4e1bcfd1a5bdd45234d5b51d7fda01d.png_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Treasure Chest</h5>
+                            <span>x<b class="animate__animated animate__flipInX">45</b></span>
+                            <p>100 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5661">
+                        <!-- <img src="sample_assets/gifts/97c975dcce2483027ececde2b6719761_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/97c975dcce2483027ececde2b6719761_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Air Dancer</h5>
+                            <span>x<b class="animate__animated animate__flipInX">16</b></span>
+                            <p>300 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5336">
+                        <!-- <img src="sample_assets/gifts/2c757ada80dd0ea072fdbb0c3d81129d_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/2c757ada80dd0ea072fdbb0c3d81129d_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Make it rain</h5>
+                            <span>x<b class="animate__animated animate__flipInX">36</b></span>
+                            <p>500 coin</p>
+                        </div>
+                    </div>
+
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6070">
+                        <!-- <img src="sample_assets/gifts/840b3d6e362053e4eb83af0ca7228762_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/840b3d6e362053e4eb83af0ca7228762_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Mirror</h5>
+                            <span>x<b class="animate__animated animate__flipInX">5</b></span>
+                            <p>30 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6090">
+                        <!-- <img src="sample_assets/gifts/9494c8a0bc5c03521ef65368e59cc2b8_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/9494c8a0bc5c03521ef65368e59cc2b8_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Fireworks</h5>
+                            <span>x<b class="animate__animated animate__flipInX">9</b></span>
+                            <p>1,088 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6369">
+                        <!-- <img src="sample_assets/gifts/4fb89af2082a290b37d704e20f4fe729_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/4fb89af2082a290b37d704e20f4fe729_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Lion</h5>
+                            <span>x<b class="animate__animated animate__flipInX">17</b></span>
+                            <p>29,999 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6170">
+                        <!-- <img src="sample_assets/gifts/039600395778e801a8bbfea6f9bf3735_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/039600395778e801a8bbfea6f9bf3735_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Hot Choco</h5>
+                            <span>x<b class="animate__animated animate__flipInX">10</b></span>
+                            <p>30 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6402">
+                        <!-- <img src="sample_assets/gifts/77e5859bffdb7a313fce5c93a9726b4d_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/77e5859bffdb7a313fce5c93a9726b4d_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">EyeLiner Kohl</h5>
+                            <span>x<b class="animate__animated animate__flipInX">8</b></span>
+                            <p>30 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6686">
+                        <!-- <img src="sample_assets/gifts/134e51c00f46e01976399883ca4e4798_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/134e51c00f46e01976399883ca4e4798_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Love You</h5>
+                            <span>x<b class="animate__animated animate__flipInX">16</b></span>
+                            <p>199 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5837">
+                        <!-- <img src="sample_assets/gifts/c15fd749228d5aec9015ea1fde9a6b28_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/c15fd749228d5aec9015ea1fde9a6b28_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Tabbla</h5>
+                            <span>x<b class="animate__animated animate__flipInX">1</b></span>
+                            <p>10,000 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6031">
+                        <!-- <img src="sample_assets/gifts/fd53368cacaba5c02fceb38903ed8dd3_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/fd53368cacaba5c02fceb38903ed8dd3_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Gaming Chair</h5>
+                            <span>x<b class="animate__animated animate__flipInX">1</b></span>
+                            <p>1,200 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6040">
+                        <!-- <img src="sample_assets/gifts/a8c7112e9a8205268c27446eeb89debc_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/a8c7112e9a8205268c27446eeb89debc_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">TikTok Universe</h5>
+                            <span>x<b class="animate__animated animate__flipInX">2</b></span>
+                            <p>34,999 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5287">
+                        <!-- <img src="sample_assets/gifts/4caa9de208d634c1fab77754fe16530c_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/4caa9de208d634c1fab77754fe16530c_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Golden sports car</h5>
+                            <span>x<b class="animate__animated animate__flipInX">87</b></span>
+                            <p>29,999 coin</p>
+                        </div>
+                    </div>
+
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5731">
+                        <!-- <img src="sample_assets/gifts/d4faa402c32bf4f92bee654b2663d9f1_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/d4faa402c32bf4f92bee654b2663d9f1_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Coral</h5>
+                            <span>x<b class="animate__animated animate__flipInX">21</b></span>
+                            <p>499 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5587">
+                        <!-- <img src="sample_assets/gifts/58cbff1bd592ae4365a450c4bf767f3a.png_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/58cbff1bd592ae4365a450c4bf767f3a.png_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Gold Mine</h5>
+                            <span>x<b class="animate__animated animate__flipInX">2</b></span>
+                            <p>1,000 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6089">
+                        <!-- <img src="sample_assets/gifts/e7ce188da898772f18aaffe49a7bd7db_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/e7ce188da898772f18aaffe49a7bd7db_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Sports Car</h5>
+                            <span>x<b class="animate__animated animate__flipInX">3</b></span>
+                            <p>7,000 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5285">
+                        <!-- <img src="sample_assets/gifts/f62cfc2f5d549554e0392f47a34019ab_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/f62cfc2f5d549554e0392f47a34019ab_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Dubai</h5>
+                            <span>x<b class="animate__animated animate__flipInX">3</b></span>
+                            <p>7,499 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6200">
+                        <!-- <img src="sample_assets/gifts/a9d0e9406230fa9a901d992a90574e39_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/a9d0e9406230fa9a901d992a90574e39_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Mirror Bloom</h5>
+                            <span>x<b class="animate__animated animate__flipInX">11</b></span>
+                            <p>1,000 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5659">
+                        <!-- <img src="sample_assets/gifts/0f158a08f7886189cdabf496e8a07c21_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/0f158a08f7886189cdabf496e8a07c21_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Paper Crane</h5>
+                            <span>x<b class="animate__animated animate__flipInX">16</b></span>
+                            <p>99 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5707">
+                        <!-- <img src="sample_assets/gifts/d5142d535747c2c0adc3afb7f469333b_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/d5142d535747c2c0adc3afb7f469333b_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Love you</h5>
+                            <span>x<b class="animate__animated animate__flipInX">3</b></span>
+                            <p>49 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6345">
+                        <!-- <img src="sample_assets/gifts/b391e4aa422b064282fad64b32836734_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/b391e4aa422b064282fad64b32836734_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Cat</h5>
+                            <span>x<b class="animate__animated animate__flipInX">1</b></span>
+                            <p>3,999 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6199">
+                        <!-- <img src="sample_assets/gifts/c959df6dbffd6f07849d22d2c3c07861_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/c959df6dbffd6f07849d22d2c3c07861_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Email Message </h5>
+                            <span>x<b class="animate__animated animate__flipInX">3</b></span>
+                            <p>1,000 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5559">
+                        <!-- <img src="sample_assets/gifts/ae46ac6582a606009643440fe4138eb4.png_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/ae46ac6582a606009643440fe4138eb4.png_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Crystal Heart</h5>
+                            <span>x<b class="animate__animated animate__flipInX">1</b></span>
+                            <p>499 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5301">
+                        <!-- <img src="sample_assets/gifts/977f88a797a6c75ef8b712b46cf90850_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/977f88a797a6c75ef8b712b46cf90850_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Oud</h5>
+                            <span>x<b class="animate__animated animate__flipInX">2</b></span>
+                            <p>300 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6202">
+                        <!-- <img src="sample_assets/gifts/b4315abd86e61f3401ac51eaadeb1f96_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/b4315abd86e61f3401ac51eaadeb1f96_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Arabian Coffee</h5>
+                            <span>x<b class="animate__animated animate__flipInX">1</b></span>
+                            <p>1,999 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6456">
+                        <!-- <img src="sample_assets/gifts/4a1332611d451aa9f9cd2aa2932ebbfa_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/4a1332611d451aa9f9cd2aa2932ebbfa_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">TikTok Air Drop</h5>
+                            <span>x<b class="animate__animated animate__flipInX">2</b></span>
+                            <p>999 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6203">
+                        <!-- <img src="sample_assets/gifts/df63eee488dc0994f6f5cb2e65f2ae49_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/df63eee488dc0994f6f5cb2e65f2ae49_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Sunset Speedway</h5>
+                            <span>x<b class="animate__animated animate__flipInX">2</b></span>
+                            <p>10,000 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6556">
+                        <!-- <img src="sample_assets/gifts/f71e047b000a96f589a7e5ec48152e29_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/f71e047b000a96f589a7e5ec48152e29_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Valley Festival</h5>
+                            <span>x<b class="animate__animated animate__flipInX">1</b></span>
+                            <p>5,999 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5978">
+                        <!-- <img src="sample_assets/gifts/4227ed71f2c494b554f9cbe2147d4899_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/4227ed71f2c494b554f9cbe2147d4899_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Train</h5>
+                            <span>x<b class="animate__animated animate__flipInX">4</b></span>
+                            <p>899 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6440">
+                        <!-- <img src="sample_assets/gifts/9d17fb921358aa2e0562b82d884e212e_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/9d17fb921358aa2e0562b82d884e212e_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Whale diving</h5>
+                            <span>x<b class="animate__animated animate__flipInX">6</b></span>
+                            <p>2,150 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6587">
+                        <!-- <img src="sample_assets/gifts/12b50e0fd1a777309aec562d1544f423_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/12b50e0fd1a777309aec562d1544f423_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Happy Friday</h5>
+                            <span>x<b class="animate__animated animate__flipInX">8</b></span>
+                            <p>399 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5664">
+                        <!-- <img src="sample_assets/gifts/70fd490f208c37c89ebdecf4c3c1c31b_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/70fd490f208c37c89ebdecf4c3c1c31b_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Pearl</h5>
+                            <span>x<b class="animate__animated animate__flipInX">2</b></span>
+                            <p>800 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5832">
+                        <!-- <img src="sample_assets/gifts/7218c4ffca3e613c278281952ad25964_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/7218c4ffca3e613c278281952ad25964_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Cool Cat</h5>
+                            <span>x<b class="animate__animated animate__flipInX">9</b></span>
+                            <p>499 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5651">
+                        <!-- <img src="sample_assets/gifts/69d7dadcd93942bad49d0b9874f69c1b_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/69d7dadcd93942bad49d0b9874f69c1b_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Garland </h5>
+                            <span>x<b class="animate__animated animate__flipInX">6</b></span>
+                            <p>1,500 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5955">
+                        <!-- <img src="sample_assets/gifts/58ce827091411e667dd6ba8a93215f86_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/58ce827091411e667dd6ba8a93215f86_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Champion</h5>
+                            <span>x<b class="animate__animated animate__flipInX">2</b></span>
+                            <p>1,500 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6271">
+                        <!-- <img src="sample_assets/gifts/6026505eea9b9bce071dd699253abf6a_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/6026505eea9b9bce071dd699253abf6a_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Falcon</h5>
+                            <span>x<b class="animate__animated animate__flipInX">3</b></span>
+                            <p>10,999 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5505">
+                        <!-- <img src="sample_assets/gifts/034c891a69d337729e5202672443d15e.png_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/034c891a69d337729e5202672443d15e.png_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Love Rain</h5>
+                            <span>x<b class="animate__animated animate__flipInX">1</b></span>
+                            <p>199 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6149">
+                        <!-- <img src="sample_assets/gifts/8520d47b59c202a4534c1560a355ae06_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/8520d47b59c202a4534c1560a355ae06_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Interstellar</h5>
+                            <span>x<b class="animate__animated animate__flipInX">1</b></span>
+                            <p>10,000 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6131">
+                        <!-- <img src="sample_assets/gifts/5b9ad81c6d9945696c5c3092aea31857_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/5b9ad81c6d9945696c5c3092aea31857_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Desert Camel</h5>
+                            <span>x<b class="animate__animated animate__flipInX">3</b></span>
+                            <p>9,999 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5338">
+                        <!-- <img src="sample_assets/gifts/483c644e67e9bb1dd5970f2df00b7576_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/483c644e67e9bb1dd5970f2df00b7576_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Unicorn Fantasy</h5>
+                            <span>x<b class="animate__animated animate__flipInX">1</b></span>
+                            <p>5,000 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5652">
+                        <!-- <img src="sample_assets/gifts/3c7291ad4c2a6d4f70505c3e296ecebe_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/3c7291ad4c2a6d4f70505c3e296ecebe_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Ferris Wheel</h5>
+                            <span>x<b class="animate__animated animate__flipInX">1</b></span>
+                            <p>3,000 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6542">
+                        <!-- <img src="sample_assets/gifts/9ea89bfacb6009f64e7d91f3ce13db17_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/9ea89bfacb6009f64e7d91f3ce13db17_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">TikTok Red Carpet</h5>
+                            <span>x<b class="animate__animated animate__flipInX">1</b></span>
+                            <p>6,600 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5556">
+                        <!-- <img src="sample_assets/gifts/96286bb3883c5340879c5d8ecbbdc948.png_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/96286bb3883c5340879c5d8ecbbdc948.png_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Diamond Crown</h5>
+                            <span>x<b class="animate__animated animate__flipInX">2</b></span>
+                            <p>1,499 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5734">
+                        <!-- <img src="sample_assets/gifts/488be317f77358386438d04e38801b5e_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/488be317f77358386438d04e38801b5e_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Goggles</h5>
+                            <span>x<b class="animate__animated animate__flipInX">1</b></span>
+                            <p>199 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6432">
+                        <!-- <img src="sample_assets/gifts/485175fda92f4d2f862e915cbcf8f5c4_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/485175fda92f4d2f862e915cbcf8f5c4_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Star</h5>
+                            <span>x<b class="animate__animated animate__flipInX">3</b></span>
+                            <p>99 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5899">
+                        <!-- <img src="sample_assets/gifts/4d547840317d296c4c743d310a27d575_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/4d547840317d296c4c743d310a27d575_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Swing</h5>
+                            <span>x<b class="animate__animated animate__flipInX">4</b></span>
+                            <p>399 coin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5662">
+                        <!-- <img src="sample_assets/gifts/7ad7ebc43e1c161c0ee566395ab7882b_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/7ad7ebc43e1c161c0ee566395ab7882b_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Necklace</h5>
+                            <span>x<b class="animate__animated animate__flipInX">2</b></span>
+                            <p>400 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6288">
+                        <!-- <img src="sample_assets/gifts/a6e90aa6172ee6411188e3e47f943863_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/a6e90aa6172ee6411188e3e47f943863_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Goal!</h5>
+                            <span>x<b class="animate__animated animate__flipInX">1</b></span>
+                            <p>1,999 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="6007">
+                        <!-- <img src="sample_assets/gifts/9f8bd92363c400c284179f6719b6ba9c_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/9f8bd92363c400c284179f6719b6ba9c_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Boxing Gloves</h5>
+                            <span>x<b class="animate__animated animate__flipInX">1</b></span>
+                            <p>299 coin</p>
+                        </div>
+                    </div>
+                    <div class="grid-item flex-column d-flex justify-content-between align-items-center rounded-5"
+                        data-giftid="5897">
+                        <!-- <img src="sample_assets/gifts/97a26919dbf6afe262c97e22a83f4bf1_tplv-obj.png" loading="auto" alt="" class="card-img-top animate__animated animate__headShake"> -->
+                        <img src="sample_assets/gifts/97a26919dbf6afe262c97e22a83f4bf1_tplv-obj.png" loading="auto"
+                            alt="" class="card-img-top animate__animated animate__headShake">
+                        <div>
+                            <h5 class="card-title">Swan</h5>
+                            <span>x<b class="animate__animated animate__flipInX">1</b></span>
+                            <p>699 coin</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</body>
+
+</html>

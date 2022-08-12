@@ -1,0 +1,148 @@
+/* https://css-tricks.com/auto-sizing-columns-css-grid-auto-fill-vs-auto-fit */
+
+/* 
+# CSS Layouts
+   https://www.quackit.com/css/grid/examples/css_grid_website_layout_examples.cfm
+*/
+
+:root {
+    /* scrollbar-color: #77797b #1f2327; */
+    color-scheme: dark;
+    /* background-image: url('https://img.freepik.com/free-photo/solid-concrete-wall-textured-backdrop_53876-129493.jpg') !important; */
+}
+
+
+/* html, body {
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+} */
+
+body {
+    background-color: #24292e !important;
+    /* background-image: url('https://img.freepik.com/free-photo/solid-concrete-wall-textured-backdrop_53876-129493.jpg') !important; */
+}
+
+p {
+    color: #9da5b4 !important;
+}
+
+h5 {
+    color: #d6d8da !important;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-rows: repeat(auto-fill, minmax(220px, 1fr));
+    /* grid-template-rows: repeat(1, 220px); */
+    grid-column-gap: 10px;
+    grid-row-gap: 10px;
+    box-shadow: inset 0px 0px 20px 10px rgba(0,0,0,0.1);
+    /* justify-items: stretch; */
+    /* align-items: stretch; */
+}
+
+
+.grid-item {
+    background-color: #37393f;
+    text-align: center;
+    /* max-height: 245; */
+    /* border: 1px solid rgba(0, 0, 0, 0.8); */
+    /* border-radius: 10px; */
+    /* height: 250px; */
+    /* height: max-content; */
+    /* background-color: #40464d !important; */
+    /* -webkit-box-shadow: -2px -1px 15px 7px rgba(0,0,0,0.5); */
+    /* -moz-box-shadow: -3px -2px 30px 14px rgba(0,0,0,0.425); */
+}
+
+.grid-item img {
+    padding: 15px;
+    height: 105.15;
+    width: 105.15;
+    filter: drop-shadow(0px 0px 5px rgba(249, 247, 247, 0.1));
+    /* filter: blur(5px); */
+}
+
+
+/* #videoContainer {
+    height: 500px;
+} */
+
+#giftsContainer {
+    /* height: 500px; */
+    /* https://stackoverflow.com/questions/48943233/how-can-you-set-the-height-of-an-outer-div-to-always-be-equal-to-a-particular-in */
+    overflow:auto;
+    height:0;
+    min-height:100%;
+}
+
+/* .border {
+    border-color: #181a1f !important;
+} */
+
+#videoContainer video {
+    /* box-shadow: #060606 0px 0px 5px 1px; */
+    background-color: #40464d !important;
+    min-height:500px;
+    max-height: fit-content;
+}
+
+
+.grid-item {
+    transition: 0.2s ease-in-out;
+}
+
+.grid-item:hover {
+    /* margin-top: -2; */
+    /* scale: 1.03; */
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.3);
+}
+
+#stats {
+    /* margin-right: 10px !important; */
+    background-color: #37393f !important;
+    /* box-shadow: 0px 1px 2px rgba(0,0,0,0.1), 
+    0px 2px 4px rgba(0,0,0,0.1), 
+    0px 4px 8px rgba(0,0,0,0.1), 
+    0px 8px 16px rgba(0,0,0,0.1); */
+}
+
+
+/* ------------------------------------------------------------------------------
+ # Colorful Blur Shadow 
+    https://css-tricks.com/creating-colorful-smart-shadows
+    https://www.kirupa.com/html5/creating_colorful_smart_shadows.htm
+*/
+/*
+.colorfulShadow {
+    position: relative;
+}
+
+.colorfulShadow {
+    content: "";
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: inherit;
+    background-position: center center;
+    filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.50)) blur(20px);
+    z-index: -1;
+
+    
+    animation: oscillate 1s cubic-bezier(.17, .67, .45, 1.32) infinite alternate;
+}
+
+@keyframes oscillate {
+    from {
+        transform: scale(1, 1);
+    }
+
+    to {
+        transform: scale(1.01, 1.01);
+    }
+}
+*/
+/* ------------------------------------------------------------------------------ */

@@ -1,0 +1,161 @@
+<html>
+
+<head>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>TikTok Live Analytics</title>
+
+    <!-- jQuery Core 3.6.0 -->
+    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> -->
+    <script src="assets/cdn/jquery-3.6.0.min.js"></script>
+
+    <!-- Socket.io -->
+    <!-- <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script> -->
+    <script src="assets/cdn/socket.io-4.5.0.min.js"></script>
+
+    <!-- Videojs -->
+    <!-- <link href="https://vjs.zencdn.net/7.19.2/video-js.css" rel="stylesheet" />
+    <script defer src="https://vjs.zencdn.net/7.19.2/video.min.js"></script> -->
+    
+    <!-- bilibili - flv.js -->
+    <!-- https://github.com/Bilibili/flv.js -->
+    <!-- <script src="http://bilibili.github.io/flv.js/dist/flv.js"></script> -->
+    <script src="https://github.com/bilibili/flv.js/releases/download/v1.6.2/flv.js"></script>
+    <!-- <script src="assets/cdn/flv-1.6.2.js"></script> -->
+
+
+    <!-- Font Awesome -->
+    <!-- <script src="https://kit.fontawesome.com/f254c672ac.js" crossorigin="anonymous"></script> -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet"  integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Google Fonts -->
+    <!-- <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" /> -->
+    <link href="assets/cdn/google_fonts.css" rel="stylesheet" />
+
+    <!-- MDB CSS -->
+    <!-- <link defer href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.9.0/mdb.dark.min.css" rel="stylesheet" /> -->
+    <!-- <link href="assets/cdn/mdb.dark.min.css" rel="stylesheet" /> -->
+    <link defer href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/4.4.0/mdb.dark.min.css" rel="stylesheet" />
+    <!-- MDB JS -->
+    <!-- <script defer type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.9.0/mdb.min.js"></script> -->
+    <!-- <script defer type="text/javascript" src="assets/cdn/mdb.min.js"></script> -->
+    <script defer type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/4.4.0/mdb.min.js"></script>
+    <!-- 
+		In case I decided to use normal BootStrap.
+			https://getbootstrap.com/docs/versions/
+			https://getbootstrap.com/docs/5.1/getting-started/introduction/
+	-->
+
+    <!-- Animate CSS -->
+    <!-- https://animate.style -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/> -->
+    <link href="assets/cdn/animate.min.css" rel="stylesheet" />
+
+
+    <!-- Scripts -->
+    <script src="assets/scripts.js"></script>
+    <script src="assets/videoPlayer.js"></script>
+    <script src="assets/db.js"></script>
+    <script src="assets/connection.js"></script>
+    <script src="assets/app.js"></script>
+
+    <!-- StyleSheets -->
+    <link rel="stylesheet" href="assets/style.css">
+
+
+</head>
+
+<body>
+  <!-- onbeforecopy="return false"
+  ondragstart="return false" 
+  onselectstart="return false" 
+  oncontextmenu="return false" 
+  mouseup="return false" 
+  mousedown="return false" 
+  dragstart="return false" 
+  onselect="document.selection.empty()" 
+  oncopy="document.selection.empty()"> -->
+
+    <div class="container h-100">
+        
+        <div class="row row-cols-1 pb-1">
+
+            <!-- inputes -->
+            <div class="col row px-0 py-2 mx-0">
+                <p class="col-12">Enter the <b>@username</b> of a user who is currently live:
+                    <a href="https://www.tiktok.com/live"><b>TikTok LIVE</b></a>
+                </p>
+                <div class="col-lg-5 col-12 row row-cols-3 gx-2 px-3" style="column-gap: 10px;">
+                    <div class="form-outline col-6">
+                        <input type="text" id="uniqueIdInput" class="form-control" />
+                        <label class="form-label">Username</label>
+                    </div>
+                    <button type="button" id="connectButton" class="col-3 btn btn-outline-light btn-rounded">connect</button>
+                    <button  type="button" id="reconnectButton" onclick="connect(true)" class="col-1 btn btn-outline-light btn-floating">
+                        <i class="fa-solid fa-lg fa-rotate"></i>
+                    </button>
+                </div>
+                <span id="stateText" class="col-lg-7 col-12 d-flex align-items-center"></span>
+            </div>
+
+            <!-- Stats -->
+            <div id="stats" class="col-12 py-2 px-0 mx-0 mt-2 row rounded-5" style="justify-content: center;">
+                <!-- Owner -->
+                <div class="col-md-6 col-12 row row-cols-2 d-flex align-items-center p-0 m-0">
+                    <div id="profilePicture" class="col-4 p-2 d-flex align-items-center justify-content-center">
+                        <!-- <img id="avatar" class="rounded-circle" height="100px" width="100px" style="object-fit: contain;object-fit: cover; position: absolute;z-index: -1;filter: blur(10px);scale: 0.9;" src="data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHZpZXdCb3g9IjAgMCAyMjYgMjI2Ij48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWNhcD0iYnV0dCIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIgc3Ryb2tlLW1pdGVybGltaXQ9IjEwIiBzdHJva2UtZGFzaGFycmF5PSIiIHN0cm9rZS1kYXNob2Zmc2V0PSIwIiBmb250LWZhbWlseT0ibm9uZSIgZm9udC13ZWlnaHQ9Im5vbmUiIGZvbnQtc2l6ZT0ibm9uZSIgdGV4dC1hbmNob3I9Im5vbmUiIHN0eWxlPSJtaXgtYmxlbmQtbW9kZTogbm9ybWFsIj48cGF0aCBkPSJNMCwyMjZ2LTIyNmgyMjZ2MjI2eiIgZmlsbD0ibm9uZSIvPjxnIGlkPSJMYXllcl8xIj48cGF0aCBkPSJNMjAyLjE2NDA2LDE3NS41MjA3OGMtMC45ODg3NSwwIC0xLjk3NzUsLTAuMjY0ODQgLTIuODYwMzEsLTAuODQ3NWMtMi40NTQyMiwtMS41ODkwNiAtMy4xNzgxMiwtNC44NTU0NyAtMS41ODkwNiwtNy4zMjczNGMxMC40MTcxOSwtMTYuMTkwNzggMTUuOTI1OTQsLTM0Ljk5NDY5IDE1LjkyNTk0LC01NC4zNDU5NGMwLC01NS40OTM1OSAtNDUuMTQ3MDMsLTEwMC42NDA2MiAtMTAwLjY0MDYyLC0xMDAuNjQwNjJjLTU1LjQ5MzU5LDAgLTEwMC42NDA2Miw0NS4xNDcwMyAtMTAwLjY0MDYyLDEwMC42NDA2M2MwLDE5LjE3NDY5IDUuNDIwNDcsMzcuODM3MzQgMTUuNjYxMDksNTMuOTM5ODRjMS41NzE0MSwyLjQ3MTg4IDAuODQ3NSw1LjczODI4IC0xLjYyNDM4LDcuMzA5NjljLTIuNDcxODgsMS41NzE0MSAtNS43MzgyOCwwLjg0NzUgLTcuMzA5NjksLTEuNjI0MzdjLTExLjMzNTMxLC0xNy43OTc1IC0xNy4zMjA3OCwtMzguNDIgLTE3LjMyMDc4LC01OS42MjUxNmMwLC02MS4zMzc4MSA0OS44OTY1NiwtMTExLjIzNDM3IDExMS4yMzQzOCwtMTExLjIzNDM3YzYxLjMzNzgxLDAgMTExLjIzNDM4LDQ5Ljg5NjU2IDExMS4yMzQzOCwxMTEuMjM0MzhjMCwyMS4zOTkzOCAtNi4wOTE0MSw0Mi4xODA3OCAtMTcuNjIwOTQsNjAuMDg0MjJjLTEuMDA2NDEsMS41ODkwNiAtMi43MTkwNiwyLjQzNjU2IC00LjQ0OTM4LDIuNDM2NTZ6IiBmaWxsPSIjOTVhNWE2Ii8+PHBhdGggZD0iTTExMywyMjQuMjM0MzhjLTI3LjY4NSwwIC01NC4yMDQ2OSwtMTAuMjIyOTcgLTc0LjY4NTk0LC0yOC44MTVjLTIuMTcxNzIsLTEuOTU5ODQgLTIuMzMwNjIsLTUuMzE0NTMgLTAuMzcwNzgsLTcuNDg2MjVsMC41MTIwMywtMC41NjVjMC4wNTI5NywtMC4wNzA2MyAwLjEyMzU5LC0wLjEyMzU5IDAuMTc2NTYsLTAuMTk0MjJjNDAuOTk3ODEsLTQxLjAxNTQ3IDEwNy43Mzg0NCwtNDEuMDE1NDcgMTQ4LjczNjI1LDBjMC4xNTg5MSwwLjE1ODkxIDAuMzAwMTYsMC4zMTc4MSAwLjQyMzc1LDAuNDc2NzJjMC4wODgyOCwwLjA4ODI4IDAuMTc2NTYsMC4xNzY1NiAwLjI2NDg0LDAuMjY0ODRjMS45NTk4NCwyLjE3MTcyIDEuODAwOTQsNS41MDg3NSAtMC4zNzA3OCw3LjQ4NjI1Yy0yMC40ODEyNSwxOC42MDk2OSAtNDcuMDAwOTQsMjguODMyNjYgLTc0LjY4NTk0LDI4LjgzMjY2ek00OS43MiwxOTEuMjcwMTZjMTcuODY4MTMsMTQuNDYwNDcgNDAuMTMyNjYsMjIuMzcwNDcgNjMuMjgsMjIuMzcwNDdjMjMuMTQ3MzQsMCA0NS40MTE4OCwtNy45MSA2My4yOCwtMjIuMzcwNDdjLTM1Ljg1OTg0LC0zMi4zMjg1OSAtOTAuNzAwMTYsLTMyLjMyODU5IC0xMjYuNTYsMHoiIGZpbGw9IiM2NjY2NjYiLz48cGF0aCBkPSJNMTEzLDEzNS45NTMxM2MtMjIuMzg4MTIsMCAtNDAuNjA5MzcsLTE4LjIyMTI1IC00MC42MDkzNywtNDAuNjA5MzdjMCwtMjIuMzg4MTMgMTguMjIxMjUsLTQwLjYwOTM3IDQwLjYwOTM4LC00MC42MDkzN2MyMi4zODgxMywwIDQwLjYwOTM4LDE4LjIyMTI1IDQwLjYwOTM4LDQwLjYwOTM4YzAsMjIuMzg4MTMgLTE4LjIyMTI1LDQwLjYwOTM4IC00MC42MDkzNyw0MC42MDkzOHpNMTEzLDY1LjMyODEzYy0xNi41NDM5MSwwIC0zMC4wMTU2MiwxMy40NzE3MiAtMzAuMDE1NjIsMzAuMDE1NjNjMCwxNi41NDM5MSAxMy40NzE3MiwzMC4wMTU2MyAzMC4wMTU2MywzMC4wMTU2M2MxNi41NDM5MSwwIDMwLjAxNTYzLC0xMy40NzE3MiAzMC4wMTU2MywtMzAuMDE1NjJjMCwtMTYuNTQzOTEgLTEzLjQ3MTcyLC0zMC4wMTU2MiAtMzAuMDE1NjIsLTMwLjAxNTYyeiIgZmlsbD0iIzY2NjY2NiIvPjwvZz48L2c+PC9zdmc+"/> -->
+                        <img id="avatar" class="rounded-circle" height="100px" width="100px" style="object-fit: contain;object-fit: cover" src="data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHZpZXdCb3g9IjAgMCAyMjYgMjI2Ij48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWNhcD0iYnV0dCIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIgc3Ryb2tlLW1pdGVybGltaXQ9IjEwIiBzdHJva2UtZGFzaGFycmF5PSIiIHN0cm9rZS1kYXNob2Zmc2V0PSIwIiBmb250LWZhbWlseT0ibm9uZSIgZm9udC13ZWlnaHQ9Im5vbmUiIGZvbnQtc2l6ZT0ibm9uZSIgdGV4dC1hbmNob3I9Im5vbmUiIHN0eWxlPSJtaXgtYmxlbmQtbW9kZTogbm9ybWFsIj48cGF0aCBkPSJNMCwyMjZ2LTIyNmgyMjZ2MjI2eiIgZmlsbD0ibm9uZSIvPjxnIGlkPSJMYXllcl8xIj48cGF0aCBkPSJNMjAyLjE2NDA2LDE3NS41MjA3OGMtMC45ODg3NSwwIC0xLjk3NzUsLTAuMjY0ODQgLTIuODYwMzEsLTAuODQ3NWMtMi40NTQyMiwtMS41ODkwNiAtMy4xNzgxMiwtNC44NTU0NyAtMS41ODkwNiwtNy4zMjczNGMxMC40MTcxOSwtMTYuMTkwNzggMTUuOTI1OTQsLTM0Ljk5NDY5IDE1LjkyNTk0LC01NC4zNDU5NGMwLC01NS40OTM1OSAtNDUuMTQ3MDMsLTEwMC42NDA2MiAtMTAwLjY0MDYyLC0xMDAuNjQwNjJjLTU1LjQ5MzU5LDAgLTEwMC42NDA2Miw0NS4xNDcwMyAtMTAwLjY0MDYyLDEwMC42NDA2M2MwLDE5LjE3NDY5IDUuNDIwNDcsMzcuODM3MzQgMTUuNjYxMDksNTMuOTM5ODRjMS41NzE0MSwyLjQ3MTg4IDAuODQ3NSw1LjczODI4IC0xLjYyNDM4LDcuMzA5NjljLTIuNDcxODgsMS41NzE0MSAtNS43MzgyOCwwLjg0NzUgLTcuMzA5NjksLTEuNjI0MzdjLTExLjMzNTMxLC0xNy43OTc1IC0xNy4zMjA3OCwtMzguNDIgLTE3LjMyMDc4LC01OS42MjUxNmMwLC02MS4zMzc4MSA0OS44OTY1NiwtMTExLjIzNDM3IDExMS4yMzQzOCwtMTExLjIzNDM3YzYxLjMzNzgxLDAgMTExLjIzNDM4LDQ5Ljg5NjU2IDExMS4yMzQzOCwxMTEuMjM0MzhjMCwyMS4zOTkzOCAtNi4wOTE0MSw0Mi4xODA3OCAtMTcuNjIwOTQsNjAuMDg0MjJjLTEuMDA2NDEsMS41ODkwNiAtMi43MTkwNiwyLjQzNjU2IC00LjQ0OTM4LDIuNDM2NTZ6IiBmaWxsPSIjOTVhNWE2Ii8+PHBhdGggZD0iTTExMywyMjQuMjM0MzhjLTI3LjY4NSwwIC01NC4yMDQ2OSwtMTAuMjIyOTcgLTc0LjY4NTk0LC0yOC44MTVjLTIuMTcxNzIsLTEuOTU5ODQgLTIuMzMwNjIsLTUuMzE0NTMgLTAuMzcwNzgsLTcuNDg2MjVsMC41MTIwMywtMC41NjVjMC4wNTI5NywtMC4wNzA2MyAwLjEyMzU5LC0wLjEyMzU5IDAuMTc2NTYsLTAuMTk0MjJjNDAuOTk3ODEsLTQxLjAxNTQ3IDEwNy43Mzg0NCwtNDEuMDE1NDcgMTQ4LjczNjI1LDBjMC4xNTg5MSwwLjE1ODkxIDAuMzAwMTYsMC4zMTc4MSAwLjQyMzc1LDAuNDc2NzJjMC4wODgyOCwwLjA4ODI4IDAuMTc2NTYsMC4xNzY1NiAwLjI2NDg0LDAuMjY0ODRjMS45NTk4NCwyLjE3MTcyIDEuODAwOTQsNS41MDg3NSAtMC4zNzA3OCw3LjQ4NjI1Yy0yMC40ODEyNSwxOC42MDk2OSAtNDcuMDAwOTQsMjguODMyNjYgLTc0LjY4NTk0LDI4LjgzMjY2ek00OS43MiwxOTEuMjcwMTZjMTcuODY4MTMsMTQuNDYwNDcgNDAuMTMyNjYsMjIuMzcwNDcgNjMuMjgsMjIuMzcwNDdjMjMuMTQ3MzQsMCA0NS40MTE4OCwtNy45MSA2My4yOCwtMjIuMzcwNDdjLTM1Ljg1OTg0LC0zMi4zMjg1OSAtOTAuNzAwMTYsLTMyLjMyODU5IC0xMjYuNTYsMHoiIGZpbGw9IiM2NjY2NjYiLz48cGF0aCBkPSJNMTEzLDEzNS45NTMxM2MtMjIuMzg4MTIsMCAtNDAuNjA5MzcsLTE4LjIyMTI1IC00MC42MDkzNywtNDAuNjA5MzdjMCwtMjIuMzg4MTMgMTguMjIxMjUsLTQwLjYwOTM3IDQwLjYwOTM4LC00MC42MDkzN2MyMi4zODgxMywwIDQwLjYwOTM4LDE4LjIyMTI1IDQwLjYwOTM4LDQwLjYwOTM4YzAsMjIuMzg4MTMgLTE4LjIyMTI1LDQwLjYwOTM4IC00MC42MDkzNyw0MC42MDkzOHpNMTEzLDY1LjMyODEzYy0xNi41NDM5MSwwIC0zMC4wMTU2MiwxMy40NzE3MiAtMzAuMDE1NjIsMzAuMDE1NjNjMCwxNi41NDM5MSAxMy40NzE3MiwzMC4wMTU2MyAzMC4wMTU2MywzMC4wMTU2M2MxNi41NDM5MSwwIDMwLjAxNTYzLC0xMy40NzE3MiAzMC4wMTU2MywtMzAuMDE1NjJjMCwtMTYuNTQzOTEgLTEzLjQ3MTcyLC0zMC4wMTU2MiAtMzAuMDE1NjIsLTMwLjAxNTYyeiIgZmlsbD0iIzY2NjY2NiIvPjwvZz48L2c+PC9zdmc+"/>
+                    </div>
+                    <div class="col-8">
+                        <h6 id="uniqueId">Username: <a href="https://www.tiktok.com/@" target="_blank">-</a></h6>
+                        <h6>Following: <i id="following">-</i></h6>
+                        <h6>Followers: <i id="followers">-</i></h6>
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-6 row p-2">
+                    <!--  -->
+                    <div id="views" class="col-lg-6 col-md-12 col-6 text-center m-auto" data-mdb-toggle="tooltip" data-mdb-placement="top" title="0">
+                        <h4>Views</h4>
+                        <h5>-</h5>
+                    </div>
+                    <!--  -->
+                    <div id="likes" class="col-lg-6 col-md-12 col-6 text-center m-auto" data-mdb-toggle="tooltip" data-mdb-placement="top" title="0">
+                        <h4>Likes</h4>
+                        <h5>-</h5>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 row p-2">
+                    <!--  -->
+                    <div id="coins" class="col-lg-6 col-md-12 col-6 text-center m-auto" data-mdb-toggle="tooltip" data-mdb-placement="top" title="0">
+                        <h4>Coins</h4>
+                        <h5>-</h5>
+                    </div>
+                    <!--  -->
+                    <div id="money" class="col-lg-6 col-md-12 col-6 text-center m-auto" data-mdb-toggle="tooltip" data-mdb-placement="top" title="0">
+                        <h4>Money</h4>
+                        <h5>-</h5>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="col-12 row py-3 px-0 mx-0">
+    
+              <!-- Video Player -->
+              <div id="videoContainer" class="col-lg-3 col-md-5 col-12 m-0 p-0">
+                <video id="VideoPlayer" controls autoplay preload="auto" width="100%" height="100%" class="rounded-3"></video>
+              </div>
+    
+              <!-- Gifts -->
+              <div id="giftsContainer" class="col-lg-9 col-md-7 col-12 p-2 grid-container rounded-3"></div>
+    
+            </div>
+
+        </div>
+      
+    </div>
+</body>
+
+</html>
+
