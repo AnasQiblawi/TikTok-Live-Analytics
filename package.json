@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js"
   },
-  "author": "Anas Qiblawi",
+  "author": "AnasQiblawi",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.0.2",
