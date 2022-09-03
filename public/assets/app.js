@@ -251,10 +251,10 @@ function updateStats() {
         .find('h5').html(formatNumbers(db?.coins()))
     // Money
     $('#money')
-        .attr('title', db?.total('name').sar)
-        .attr('data-mdb-original-title', db?.total('symbol', 2).sar)
-        .find('h5').html(db?.total('symbol', 'compact').sar)
-        // .find('h5').html(db?.total('symbol').sar)
+        .attr('title', db?.total('name').usd)
+        .attr('data-mdb-original-title', db?.total('symbol', 2).usd)
+        .find('h5').html(db?.total('symbol', 'compact').usd)
+        // .find('h5').html(db?.total('symbol').usd)
 };
 
 // viewer stats
