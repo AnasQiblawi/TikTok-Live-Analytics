@@ -22,7 +22,8 @@ npm update
 
 ## ScreenShots
 
-![image](https://user-images.githubusercontent.com/8499322/188286509-6ad2609f-4fff-4b15-8366-307ee3a19f5b.png)
+![image](https://user-images.githubusercontent.com/8499322/188286967-6f2d745c-0797-4cb0-90c2-a29120c20ab1.png)
+![image](https://user-images.githubusercontent.com/8499322/188286945-4e6001a4-d813-4cf3-b856-26aaa08385f7.png)
 
 ## Console
 
